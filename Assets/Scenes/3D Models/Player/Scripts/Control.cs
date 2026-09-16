@@ -72,8 +72,9 @@ public class Control : MonoBehaviour
             animate.SetBool("IsFlying", isFlying);
         }
         bool fly = Input.GetKeyDown("w") || Input.GetKey("s") || Input.GetKey("a") || Input.GetKey("d");
-        bool descend = Input.GetMouseButton(1);
-        bool ascend = Input.GetMouseButton(0);
+        bool ascend = Input.GetKey(KeyCode.Space);
+        bool descend = Input.GetKey(KeyCode.LeftShift);
+        
 
         animate.SetBool(WalkingHash, walk);
         animate.SetBool(RunningHash, run);

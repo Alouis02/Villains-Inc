@@ -153,10 +153,10 @@ public class Movement : MonoBehaviour
         if (Input.GetKey("a"))
             input -= cameraTransform.right;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetKey(KeyCode.Space))
             input += Vector3.up;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetKey(KeyCode.LeftShift))
             input -= Vector3.up;
 
         input.Normalize();
