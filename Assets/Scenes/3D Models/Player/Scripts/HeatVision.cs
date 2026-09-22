@@ -1,60 +1,108 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 public class HeatVision : MonoBehaviour
 {
-    [SerializeField] private LineRenderer heatvision;
+    [Header("Heat Vision")]
+    [SerializeField] private LineRenderer heatVision;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private Transform target;
+
+    [Header("Impact Effect")]
     [SerializeField] private ParticleSystem blastEffect;
 
-    void Start()
-    {
-        heatvision.enabled = false;
-    }
+    [Header("Settings")]
+    [SerializeField] private float maxDistance = 1000f;
 
-    void Update()
+    private Camera mainCamera;
+
+    private void Start()
     {
-        if (Input.GetMouseButton(1) || Input.GetMouseButtonDown(1)) // Hold Right mouse to shoot
+        mainCamera = Camera.main;
+
+        heatVision.enabled = false;
+
+        if (blastEffect != null)
         {
-            Camera cam = Camera.main;
-            if (cam == null)
-                return;
-
-            Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f));
-            ray.origin = firePoint.position;
-
-            Vector3 endpoint = ray.origin + ray.direction * 1000f; // Default endpoint if no hit occurs
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 1000f))
-            {
-                endpoint = hit.point;
-
-                heatvision.SetPosition(0, firePoint.position);
-                heatvision.SetPosition(1, endpoint);
-                heatvision.enabled = true;
-
-                Invoke("TurnOffHeatVision", .3f);
-
-                blastEffect.transform.position = hit.point;
-                blastEffect.Play();
-            }
-
-            else
-            {
-                heatvision.SetPosition(0, firePoint.position);
-                heatvision.SetPosition(1, endpoint);
-                heatvision.enabled = true;
-                Invoke("TurnOffHeatVision", .3f);
-            }
-
+            blastEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 
-    private void TurnOffHeatVision()
+    private void Update()
     {
-        heatvision.enabled = false;
+        if (Input.GetMouseButton(1))
+        {
+            FireHeatVision();
+        }
+        else
+        {
+            StopHeatVision();
+        }
+    }
+
+    private void FireHeatVision()
+    {
+        if (mainCamera == null || firePoint == null)
+            return;
+
+        // Create an aiming ray from the center of the camera.
+        Ray cameraRay = mainCamera.ViewportPointToRay(
+            new Vector3(0.5f, 0.5f, 0f)
+        );
+
+        Vector3 targetPoint;
+
+        // Raycast from the camera to determine what the player is aiming at.
+        if (Physics.Raycast(cameraRay, out RaycastHit hit, maxDistance))
+        {
+            targetPoint = hit.point;
+
+            // Move impact particles to the hit location.
+            if (blastEffect != null)
+            {
+                blastEffect.transform.position = hit.point;
+
+                // Make the particles face the surface.
+                blastEffect.transform.rotation =
+                    Quaternion.LookRotation(hit.normal);
+
+                if (!blastEffect.isPlaying)
+                {
+                    blastEffect.Play();
+                }
+            }
+        }
+        else
+        {
+            // Nothing was hit, so extend the beam forward.
+            targetPoint = cameraRay.origin +
+                          cameraRay.direction * maxDistance;
+
+            // No impact particles when nothing is hit.
+            if (blastEffect != null && blastEffect.isPlaying)
+            {
+                blastEffect.Stop(
+                    true,
+                    ParticleSystemStopBehavior.StopEmittingAndClear
+                );
+            }
+        }
+
+        // Draw the actual heat beam.
+        heatVision.SetPosition(0, firePoint.position);
+        heatVision.SetPosition(1, targetPoint);
+
+        heatVision.enabled = true;
+    }
+
+    private void StopHeatVision()
+    {
+        heatVision.enabled = false;
+
+        if (blastEffect != null && blastEffect.isPlaying)
+        {
+            blastEffect.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
+        }
     }
 }
