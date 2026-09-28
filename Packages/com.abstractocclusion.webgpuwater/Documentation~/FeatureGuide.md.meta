@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: bc5ac8ffb860a6806c137e4db8c50988
+AssetOrigin:
+  serializedVersion: 1
+  productId: 390962
+  packageName: WebGpu interactive water
+  packageVersion: 1.0
+  assetPath: Packages/com.abstractocclusion.webgpuwater/Documentation~/FeatureGuide.md
+  uploadId: 977994

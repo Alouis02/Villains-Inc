@@ -16,18 +16,32 @@ public class HeatVision : MonoBehaviour
 
     private void Start()
     {
+        // Cache the camera used to aim the heat vision.
         mainCamera = Camera.main;
 
-        heatVision.enabled = false;
+        // Keep the beam hidden until firing.
+        if (heatVision != null)
+        {
+            heatVision.enabled = false;
+        }
 
         if (blastEffect != null)
         {
-            blastEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            // Force the particle effect to loop.
+            var main = blastEffect.main;
+            main.loop = true;
+
+            // Make sure the effect starts turned off.
+            blastEffect.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
         }
     }
 
     private void Update()
     {
+        // Hold Right Mouse Button to fire.
         if (Input.GetMouseButton(1))
         {
             FireHeatVision();
@@ -43,27 +57,36 @@ public class HeatVision : MonoBehaviour
         if (mainCamera == null || firePoint == null)
             return;
 
-        // Create an aiming ray from the center of the camera.
+        // Shoot an aiming ray from the center of the camera.
         Ray cameraRay = mainCamera.ViewportPointToRay(
             new Vector3(0.5f, 0.5f, 0f)
         );
 
         Vector3 targetPoint;
 
-        // Raycast from the camera to determine what the player is aiming at.
-        if (Physics.Raycast(cameraRay, out RaycastHit hit, maxDistance))
+        // Check what the player is aiming at.
+        if (Physics.Raycast(
+            cameraRay,
+            out RaycastHit hit,
+            maxDistance
+        ))
         {
             targetPoint = hit.point;
 
-            // Move impact particles to the hit location.
+            // ------------------------------------------------
+            // IMPACT EFFECT
+            // ------------------------------------------------
+
             if (blastEffect != null)
             {
+                // Move the effect to the hit location.
                 blastEffect.transform.position = hit.point;
 
-                // Make the particles face the surface.
+                // Make the effect face the surface.
                 blastEffect.transform.rotation =
                     Quaternion.LookRotation(hit.normal);
 
+                // Start the looping effect.
                 if (!blastEffect.isPlaying)
                 {
                     blastEffect.Play();
@@ -72,31 +95,52 @@ public class HeatVision : MonoBehaviour
         }
         else
         {
-            // Nothing was hit, so extend the beam forward.
-            targetPoint = cameraRay.origin +
-                          cameraRay.direction * maxDistance;
+            // No surface was hit.
+            targetPoint =
+                cameraRay.origin +
+                cameraRay.direction * maxDistance;
 
-            // No impact particles when nothing is hit.
-            if (blastEffect != null && blastEffect.isPlaying)
-            {
-                blastEffect.Stop(
-                    true,
-                    ParticleSystemStopBehavior.StopEmittingAndClear
-                );
-            }
+            // Stop the impact effect because there is
+            // nothing for the heat vision to hit.
+            StopBlastEffect();
         }
 
-        // Draw the actual heat beam.
-        heatVision.SetPosition(0, firePoint.position);
-        heatVision.SetPosition(1, targetPoint);
+        // ------------------------------------------------
+        // HEAT VISION BEAM
+        // ------------------------------------------------
 
-        heatVision.enabled = true;
+        if (heatVision != null)
+        {
+            // Beam starts at the player's eyes/fire point.
+            heatVision.SetPosition(
+                0,
+                firePoint.position
+            );
+
+            // Beam ends at whatever the camera is aiming at.
+            heatVision.SetPosition(
+                1,
+                targetPoint
+            );
+
+            heatVision.enabled = true;
+        }
     }
 
     private void StopHeatVision()
     {
-        heatVision.enabled = false;
+        // Hide the beam.
+        if (heatVision != null)
+        {
+            heatVision.enabled = false;
+        }
 
+        // Stop the impact effect.
+        StopBlastEffect();
+    }
+
+    private void StopBlastEffect()
+    {
         if (blastEffect != null && blastEffect.isPlaying)
         {
             blastEffect.Stop(

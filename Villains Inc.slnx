@@ -1,4 +1,7 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="AbstractOcclusion.WebGpuWater.csproj" />
+  <Project Path="AbstractOcclusion.WebGpuWater.Editor.csproj" />
+  <Project Path="AbstractOcclusion.WebGpuWater.Tests.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

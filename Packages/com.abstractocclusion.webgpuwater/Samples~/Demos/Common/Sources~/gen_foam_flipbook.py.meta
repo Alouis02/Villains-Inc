@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 483ab09e4b52f3ea6ea6bce4afd5541f
+AssetOrigin:
+  serializedVersion: 1
+  productId: 390962
+  packageName: WebGpu interactive water
+  packageVersion: 1.0
+  assetPath: Packages/com.abstractocclusion.webgpuwater/Samples~/Demos/Common/Sources~/gen_foam_flipbook.py
+  uploadId: 977994

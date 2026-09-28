@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: d95ab79e4563c7f9524c6eae6d67dc84
+AssetOrigin:
+  serializedVersion: 1
+  productId: 390962
+  packageName: WebGpu interactive water
+  packageVersion: 1.0
+  assetPath: Packages/com.abstractocclusion.webgpuwater/Samples~/Demos/Common/Sources~/gen_splash_flipbook.py
+  uploadId: 977994

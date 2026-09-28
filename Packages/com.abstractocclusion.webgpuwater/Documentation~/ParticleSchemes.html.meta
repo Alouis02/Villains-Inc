@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: c7ae1787b3c5ccfe9eb02227579e42c1
+AssetOrigin:
+  serializedVersion: 1
+  productId: 390962
+  packageName: WebGpu interactive water
+  packageVersion: 1.0
+  assetPath: Packages/com.abstractocclusion.webgpuwater/Documentation~/ParticleSchemes.html
+  uploadId: 977994
