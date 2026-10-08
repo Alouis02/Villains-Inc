@@ -2,12 +2,15 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
-    [SerializeField] private float depth = 6f;
+    [SerializeField] private float defaultDepth = 15f; // Distance when looking at the sky
+    [SerializeField] private LayerMask aimLayers;      // Layers the target can snap to (e.g., Ground, Buildings)
 
     private Rigidbody rb;
+    private Camera mainCamera;
 
     private void Awake()
     {
+        mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
 
         if (rb != null)
@@ -19,18 +22,32 @@ public class Target : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = depth;
+        if (mainCamera == null) return;
 
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        // 1. Create a ray extending straight from the center of the viewport/crosshair
+        Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        Vector3 targetPosition;
 
-        if (rb != null)
+        // 2. Cast the ray into the world to see what the camera is looking at
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, aimLayers))
         {
-            rb.MovePosition(worldPosition);
+            // Snap the target directly to the surface of the object you are aiming at
+            targetPosition = hit.point;
         }
         else
         {
-            transform.position = worldPosition;
+            // If aiming at the sky or open air, project it at a fixed distance forward
+            targetPosition = ray.GetPoint(defaultDepth);
+        }
+
+        // 3. Move the object
+        if (rb != null)
+        {
+            rb.MovePosition(targetPosition);
+        }
+        else
+        {
+            transform.position = targetPosition;
         }
     }
 }

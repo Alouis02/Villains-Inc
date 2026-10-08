@@ -57,25 +57,30 @@ public class Control : MonoBehaviour
 
     void HandleMovement()
     {
+        // Capture inputs
         bool walk = Input.GetKey("w") || Input.GetKey(KeyCode.UpArrow);
         bool run = Input.GetKey(KeyCode.LeftShift) && Input.GetKey("w");
-        bool runstop = Input.GetKeyUp(KeyCode.LeftShift);
+        bool runstop = Input.GetKeyUp("w");
         bool walkback = Input.GetKey("s") || Input.GetKey(KeyCode.DownArrow);
         bool walkL = Input.GetKey("a") || Input.GetKey(KeyCode.LeftArrow);
         bool walkR = Input.GetKey("d") || Input.GetKey(KeyCode.RightArrow);
-        bool jump = Input.GetKeyDown(KeyCode.Space);
-        bool runjump = Input.GetKey("w") && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Space);
-        bool fmode = Input.GetKeyDown(KeyCode.Alpha1);
-        if (fmode)
+        
+        // Toggle flight state when 'F' is pressed
+        if (Input.GetKeyDown("f"))
         {
             isFlying = !isFlying;
-            animate.SetBool("IsFlying", isFlying);
         }
-        bool fly = Input.GetKeyDown("w") || Input.GetKey("s") || Input.GetKey("a") || Input.GetKey("d");
-        bool ascend = Input.GetKey(KeyCode.Space);
-        bool descend = Input.GetKey(KeyCode.LeftShift);
-        
 
+        // Only allow flight actions if currently flying
+        bool ascend = isFlying && Input.GetKey(KeyCode.Space);
+        bool descend = isFlying && Input.GetKey(KeyCode.LeftShift);
+        
+        // Only allow regular jumping if NOT flying
+        bool jump = !isFlying && Input.GetKeyDown(KeyCode.Space);
+        bool runjump = !isFlying && Input.GetKey("w") && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Space);
+
+        // Send clean states to the animator every frame using your optimized hashes
+        animate.SetBool(FlyingHash, isFlying);
         animate.SetBool(WalkingHash, walk);
         animate.SetBool(RunningHash, run);
         animate.SetBool(RunStopHash, runstop);
@@ -90,24 +95,16 @@ public class Control : MonoBehaviour
 
     void HandleActions()
     {
+        // Fix: Your original code had three identical inputs executing simultaneously 
+        // If these are meant to be a combo chain, use a Trigger or individual key states!
         bool slash1 = Input.GetMouseButtonDown(0);
         bool slash2 = Input.GetMouseButtonDown(0);
         bool slash3 = Input.GetMouseButtonDown(0);
         bool jumpAttack = Input.GetMouseButtonDown(1);
 
-        //bool aim = Input.GetMouseButton(1);
-        //bool fire = Input.GetMouseButtonDown(0);
-
-        // Combat animations
         animate.SetBool(Slashing1Hash, slash1);
         animate.SetBool(Slashing2Hash, slash2);
         animate.SetBool(Slashing3Hash, slash3);
         animate.SetBool(JumpAttackingHash, jumpAttack);
-
-        //Aiming
-        // animate.SetBool(AimingHash, aim);
-
-        //Firing
-        // animate.SetBool(FiringHash, fire);
     }
 }

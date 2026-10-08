@@ -144,15 +144,6 @@ public class Movement : MonoBehaviour
         if (Input.GetKey("w"))
             input += cameraTransform.forward;
 
-        if (Input.GetKey("s"))
-            input -= cameraTransform.forward;
-
-        if (Input.GetKey("d"))
-            input += cameraTransform.right;
-
-        if (Input.GetKey("a"))
-            input -= cameraTransform.right;
-
         if (Input.GetKey(KeyCode.Space))
             input += Vector3.up;
 
